@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: SpotAlert
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      database: ${MONGO_DB}
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    cache:
+      type: redis
+
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          from: ${SMTP_FROM}
+
+jwt:
+  secret-key: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+server:
+  port: ${PORT}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: always
+
+osrm:
+  base-url: ${OSRM_URL}
+  profile: driving
+  timeout-ms: 5000
+
+spotalert:
+  verification:
+    url: ${VERIFICATION_URL}
