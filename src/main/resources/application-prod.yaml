@@ -21,6 +21,7 @@ spring:
           auth: true
           starttls:
             enable: true
+          from: ${FROM_MAIL}
 
 jwt:
   secret-key: ${JWT_SECRET}
