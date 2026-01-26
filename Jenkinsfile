@@ -10,6 +10,7 @@ pipeline {
         IMAGE_NAME     = 'spotalert-backend:latest'
         CONTAINER_NAME = 'spotalert-backend'
         ENV_FILE       = '/opt/spotalert/.env'
+        SPRING_PROFILE = 'prod'
     }
 
     stages {
