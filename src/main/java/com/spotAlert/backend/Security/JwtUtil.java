@@ -24,10 +24,10 @@ public class JwtUtil {
     private long jwtExpiration;
 
     private SecretKey secretKey() {
-        return Keys.hmacShaKeyFor(
-                jwtSecretKey.getBytes(StandardCharsets.UTF_8)
-        );
+        byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
+
 
     public String generateAccessToken(Users user) {
 
