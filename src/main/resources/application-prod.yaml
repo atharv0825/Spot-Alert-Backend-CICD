@@ -5,30 +5,26 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI}
-      database: ${MONGO_DB}
 
   redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
-    cache:
-      type: redis
+    host: localhost
+    port: 6379
 
   mail:
     host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
+    port: 587
     username: ${SMTP_USERNAME}
-    password: ${SMTP_PASS}
+    password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-          from: ${SMTP_FROM}
 
 jwt:
   secret-key: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION}
+  expiration: 86400000
 
 server:
   port: ${PORT}
