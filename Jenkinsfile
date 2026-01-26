@@ -11,6 +11,7 @@ pipeline {
         CONTAINER_NAME = 'spotalert-backend'
         ENV_FILE       = '/opt/spotalert/.env'
         SPRING_PROFILE = 'prod'
+        DOCKER_NETWORK = 'spotalert-net'
     }
 
     stages {
@@ -47,17 +48,17 @@ pipeline {
         }
 
         stage('Run New Container') {
-                    steps {
-                        sh '''
-                            docker run -d \
-                              --name $CONTAINER_NAME \
-                              --env-file $ENV_FILE \
-                              --add-host=host.docker.internal:host-gateway \
-                              -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILE \
-                              -p 8081:8081 \
-                              $IMAGE_NAME
-                        '''
-                    }
-                }
+            steps {
+                sh '''
+                    docker run -d \
+                      --name $CONTAINER_NAME \
+                      --network $DOCKER_NETWORK \
+                      --env-file $ENV_FILE \
+                      -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILE \
+                      -p 8081:8081 \
+                      $IMAGE_NAME
+                '''
+            }
+        }
     }
 }
