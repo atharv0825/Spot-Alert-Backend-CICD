@@ -15,6 +15,15 @@ pipeline {
             }
         }
 
+        stage('Verify Java') {
+                    steps {
+                        sh '''
+                            java -version
+                            mvn -version
+                        '''
+                    }
+        }
+
         stage('Build Application'){
             steps{
                 sh 'mvn clean package -DskipTests'
