@@ -10,6 +10,7 @@ spring:
     host: ${SPRING_REDIS_HOST}
     port: ${SPRING_REDIS_PORT}
 
+
   mail:
     host: ${SMTP_HOST}
     port: 587
