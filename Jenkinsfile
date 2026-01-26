@@ -9,5 +9,11 @@ pipeline {
                     credentialsId: 'github-creds'
             }
         }
+
+        stage('Build Application'){
+            steps{
+                sh 'mvn clean package -DskipTests'
+            }
+        }
     }
 }
