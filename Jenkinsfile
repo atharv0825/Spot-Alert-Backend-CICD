@@ -6,6 +6,10 @@ pipeline {
             jdk 'jdk17'
     }
 
+    environment {
+            IMAGE_NAME = 'spotalert-backend:latest'
+    }
+
     stages {
 
         stage('Verify Tools') {
