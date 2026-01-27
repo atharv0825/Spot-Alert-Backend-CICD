@@ -43,4 +43,9 @@ public class AuthController {
         return ResponseEntity.ok("Email verified successfully. You may now log in.");
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return ResponseEntity.ok("This is a test");
+    }
+
 }
