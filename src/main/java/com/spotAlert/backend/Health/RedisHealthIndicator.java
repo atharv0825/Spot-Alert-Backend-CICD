@@ -17,25 +17,25 @@ public class RedisHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
         try {
-            String pong = redisTemplate.getConnectionFactory()
-                    .getConnection()
-                    .ping();
+            var connectionFactory = redisTemplate.getConnectionFactory();
 
-            if ("PONG".equalsIgnoreCase(pong)) {
-                log.info("Redis health check successful");
-                return Health.up()
-                        .withDetail("redis", "Available")
+            if (connectionFactory == null) {
+                return Health.down()
+                        .withDetail("redis", "No connection factory")
                         .build();
             }
 
-            log.warn("Redis ping failed");
-            return Health.down()
-                    .withDetail("redis", "Ping failed")
+            connectionFactory.getConnection().ping();
+
+            return Health.up()
+                    .withDetail("redis", "Available")
                     .build();
 
         } catch (Exception ex) {
-            log.error("Redis health check failed", ex);
-            return Health.down(ex).build();
+            log.warn("Redis health check failed fast", ex);
+            return Health.down()
+                    .withDetail("redis", "Unavailable")
+                    .build();
         }
     }
 }

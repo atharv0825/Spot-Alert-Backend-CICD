@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,12 +18,18 @@ public class OsrmHealthIndicator implements HealthIndicator {
     @Value("${osrm.profile}")
     private String profile;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public OsrmHealthIndicator() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(1000);
+        factory.setReadTimeout(2000);
+        this.restTemplate = new RestTemplate(factory);
+    }
 
     @Override
     public Health health() {
         try {
-            // Dummy coordinates (same point twice)
             String url = String.format(
                     "%s/route/v1/%s/74.2430,16.7144;74.2430,16.7144",
                     osrmBaseUrl,
@@ -31,16 +38,14 @@ public class OsrmHealthIndicator implements HealthIndicator {
 
             restTemplate.getForObject(url, String.class);
 
-            log.info("OSRM health check successful");
             return Health.up()
                     .withDetail("osrm", "Available")
                     .build();
 
         } catch (Exception ex) {
-            log.error("OSRM health check failed", ex);
+            log.warn("OSRM health check failed fast", ex);
             return Health.down()
                     .withDetail("osrm", "Unavailable")
-                    .withException(ex)
                     .build();
         }
     }
