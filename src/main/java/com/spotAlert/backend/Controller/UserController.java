@@ -17,13 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    @Autowired
-    private HazardService hazardService;
-    @Autowired
-    private  RouteService routeService;
+    private final HazardService hazardService;
+    private final RouteService routeService;
 
-    public UserController(HazardService hazardService) {
+    public UserController(HazardService hazardService, RouteService routeService) {
         this.hazardService = hazardService;
+        this.routeService = routeService;
     }
 
     @PostMapping("/add")
