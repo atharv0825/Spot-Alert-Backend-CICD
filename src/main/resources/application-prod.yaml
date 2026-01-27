@@ -9,7 +9,7 @@ spring:
   redis:
     host: ${SPRING_DATA_REDIS_HOST}
     port: ${SPRING_DATA_REDIS_PORT}
-
+    timeout-ms: 5000
 
   mail:
     host: ${SMTP_HOST}
