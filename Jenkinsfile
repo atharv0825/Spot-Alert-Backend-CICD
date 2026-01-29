@@ -14,7 +14,6 @@ pipeline {
                 sh '''
                     java -version
                     mvn -version
-                    docker --version
                 '''
             }
         }
