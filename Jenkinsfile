@@ -1,16 +1,6 @@
 pipeline {
     agent any
 
-     triggers {
-            githubPush()
-     }
-
-    tools {
-        maven 'Maven-3.8.7'
-        jdk 'jdk17'
-    }
-
-
     stages {
 
         stage('Verify Tools') {
