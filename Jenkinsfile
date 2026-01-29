@@ -1,18 +1,11 @@
 pipeline {
     agent {
-            docker {
-                image 'maven:3.9.9-eclipse-temurin-21'
-            }
+        docker {
+            image 'maven:3.9.9-eclipse-temurin-21'
         }
-
-
-    tools {
-        maven 'maven-3'
     }
 
-
     stages {
-
         stage('Verify Tools') {
             steps {
                 sh '''
@@ -23,10 +16,9 @@ pipeline {
         }
 
         stage('Build') {
-                    steps {
-                        sh 'mvn clean package -DskipTests'
-                    }
-                }
-
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
     }
 }
