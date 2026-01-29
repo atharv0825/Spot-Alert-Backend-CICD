@@ -10,13 +10,6 @@ pipeline {
         jdk 'jdk17'
     }
 
-    environment {
-        IMAGE_NAME     = 'spotalert-backend:latest'
-        CONTAINER_NAME = 'spotalert-backend'
-        ENV_FILE       = '/opt/spotalert/.env'
-        SPRING_PROFILE = 'prod'
-        DOCKER_NETWORK = 'spotalert-net'
-    }
 
     stages {
 
@@ -31,38 +24,10 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
+                    steps {
+                        sh 'mvn clean package -DskipTests'
+                    }
+                }
 
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME .'
-            }
-        }
-
-        stage('Stop Old Container') {
-            steps {
-                sh '''
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                '''
-            }
-        }
-
-        stage('Run New Container') {
-            steps {
-                sh '''
-                    docker run -d \
-                      --name $CONTAINER_NAME \
-                      --network $DOCKER_NETWORK \
-                      --env-file $ENV_FILE \
-                      -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILE \
-                      -p 8081:8081 \
-                      $IMAGE_NAME
-                '''
-            }
-        }
     }
 }
