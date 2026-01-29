@@ -5,6 +5,14 @@ pipeline {
         }
     }
 
+    environment {
+            IMAGE_NAME     = 'spotalert-backend:latest'
+            CONTAINER_NAME = 'spotalert-backend'
+            ENV_FILE       = '/opt/spotalert/.env'
+            SPRING_PROFILE = 'prod'
+            DOCKER_NETWORK = 'spotalert-net'
+        }
+
     stages {
         stage('Verify Tools') {
             steps {
@@ -20,5 +28,12 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
+
+
+        stage('Build Docker Image') {
+                    steps {
+                        sh 'docker build -t $IMAGE_NAME .'
+                    }
+                }
     }
 }
