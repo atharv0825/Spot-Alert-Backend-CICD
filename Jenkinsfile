@@ -30,13 +30,14 @@ pipeline {
                     docker rm -f $CONTAINER_NAME || true
 
                     docker run -d \
-                      --name $CONTAINER_NAME \
-                      --network $DOCKER_NETWORK \
-                      --env-file $ENV_FILE \
-                      -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILE \
+                      --name spotalert-backend \
+                      --network spotalert-net \
+                      --env-file /opt/spotalert/.env \
+                      -e SPRING_PROFILES_ACTIVE=prod \
                       -p 127.0.0.1:8081:8080 \
                       --restart unless-stopped \
-                      $IMAGE_NAME
+                      spotalert-backend:latest
+
                 '''
             }
         }
