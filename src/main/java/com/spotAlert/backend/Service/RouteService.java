@@ -84,6 +84,50 @@ public class RouteService {
                 .filter(h -> h.getRouteIndex() > userIndex)
                 .toList();
     }
+
+    public PolylineHazardResponse getHazardsFromPolyline(String encodedPolyline) {
+
+
+        List<RoutePoint> allRoutePoints = PolylineDecoder.decode(encodedPolyline);
+        log.info("Polyline points count: {}", allRoutePoints.size());
+
+
+        List<RoutePoint> optimizedPoints =
+                DownsampleRoute.downsample(allRoutePoints, 15);
+
+        log.info("Downsampled points: {}", optimizedPoints.size());
+
+
+        RouteBoundingBox box =
+                RouteBoundingBoxUtil.compute(optimizedPoints);
+
+        RouteBoundingBox expandedBox =
+                BoundingBoxExpander.expand(box, 100);
+
+
+        List<Hazard> candidates =
+                hazardRepository.findWithinBoundingBox(
+                        expandedBox.getMinLng(),
+                        expandedBox.getMinLat(),
+                        expandedBox.getMaxLng(),
+                        expandedBox.getMaxLat()
+                );
+
+        log.info("Hazards inside bounding box: {}", candidates.size());
+
+
+        List<HazardRouteMatch> matched = candidates.stream()
+                .map(h -> HazardousOnRoute.matchHazardToRoute(h, optimizedPoints, 40))
+                .filter(HazardRouteMatch::isOnRoute)
+                .toList();
+
+        log.info("Hazards ON route: {}", matched.size());
+
+        return PolylineHazardResponse.builder()
+                .totalHazards(matched.size())
+                .hazards(matched)
+                .build();
+    }
     
 
 }

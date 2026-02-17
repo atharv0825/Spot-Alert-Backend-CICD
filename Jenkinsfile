@@ -20,7 +20,6 @@ pipeline {
         stage('Build Image (Dockerized Maven)') {
             steps {
                 sh 'docker build -t $IMAGE_NAME .'
-                // Maven runs INSIDE Docker → no host RAM pressure
             }
         }
 

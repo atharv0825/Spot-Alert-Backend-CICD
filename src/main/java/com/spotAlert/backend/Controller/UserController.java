@@ -1,9 +1,6 @@
 package com.spotAlert.backend.Controller;
 
-import com.spotAlert.backend.DTO.HazardsDTO;
-import com.spotAlert.backend.DTO.HazardsResponseDTO;
-import com.spotAlert.backend.DTO.RouteRequest;
-import com.spotAlert.backend.DTO.RouteResponse;
+import com.spotAlert.backend.DTO.*;
 import com.spotAlert.backend.Service.HazardService;
 import com.spotAlert.backend.Service.RouteService;
 import jakarta.validation.Valid;
@@ -36,6 +33,16 @@ public class UserController {
     @PostMapping("/route/optimal")
     public ResponseEntity<RouteResponse> getBasicRoute(@Valid @RequestBody RouteRequest request) {
         RouteResponse response = routeService.getBasicRoute(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/route/hazards-by-polyline")
+    public ResponseEntity<PolylineHazardResponse> getHazardsByPolyline(
+            @RequestBody PolylineHazardRequest request) {
+
+        PolylineHazardResponse response =
+                routeService.getHazardsFromPolyline(request.getPolyline());
+
         return ResponseEntity.ok(response);
     }
 
