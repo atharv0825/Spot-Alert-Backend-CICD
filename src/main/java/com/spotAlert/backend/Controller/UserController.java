@@ -46,5 +46,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/hazards")
+    public ResponseEntity<List<HazardsResponseDTO>> getHazardsByCity(
+            @RequestParam String city) {
+        return ResponseEntity.ok(hazardService.getHazardsByCity(city));
+    }
+
 
 }
