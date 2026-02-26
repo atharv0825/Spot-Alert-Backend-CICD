@@ -3,6 +3,7 @@ package com.spotAlert.backend.Controller;
 import com.spotAlert.backend.DTO.*;
 import com.spotAlert.backend.Service.HazardService;
 import com.spotAlert.backend.Service.RouteService;
+import com.spotAlert.backend.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import java.util.List;
 public class UserController {
     private final HazardService hazardService;
     private final RouteService routeService;
+    private final UserService userService;
 
-    public UserController(HazardService hazardService, RouteService routeService) {
+    public UserController(HazardService hazardService, RouteService routeService, UserService userService) {
         this.hazardService = hazardService;
         this.routeService = routeService;
+        this.userService = userService;
     }
 
     @PostMapping("/add")
@@ -52,5 +55,14 @@ public class UserController {
         return ResponseEntity.ok(hazardService.getHazardsByCity(city));
     }
 
+    @PostMapping("/get-details")
+    public ResponseEntity<UserDetailsResponse> getUserDetails(@RequestBody UserDetailsByEmailRequest request) {
+        return ResponseEntity.ok(userService.getUserDetails(request));
+    }
+
+    @PostMapping("/update-details")
+    public ResponseEntity<UserUpdateList> updateUserDetails(@RequestBody UserUpdateRequest request) {
+        return ResponseEntity.ok(userService.setUserUpdateList(request));
+    }
 
 }

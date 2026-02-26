@@ -28,5 +28,7 @@ public class Users {
     private Boolean isVerified = false;
     private String verificationToken;
 
+    private String name;
+    private String phone;
     private LocalDateTime createdAt;
 }
