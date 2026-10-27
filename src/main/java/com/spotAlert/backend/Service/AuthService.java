@@ -17,15 +17,16 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private VerificationEmailService verificationEmailService;
 
-    public UserDTO registerUser(UserDTO dto){
-        if(userRepository.existsByEmail(dto.getEmail())){
+    public UserDTO registerUser(UserDTO dto) {
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
         }
 
@@ -33,46 +34,41 @@ public class AuthService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(dto.getRole())
-                .isVerified(false)
-                .verificationToken(verificationEmailService.generateToken())
+                .isVerified(true)
                 .createdAt(LocalDateTime.now())
                 .build();
+
         Users savedUser = userRepository.save(user);
-
-
-        verificationEmailService.sendVerificationEmail(savedUser);
 
         return UserDTO.builder()
                 .id(savedUser.getId())
                 .email(savedUser.getEmail())
-                .password(savedUser.getPassword())
                 .role(savedUser.getRole())
                 .build();
     }
 
-
     public LoginResponse login(LoginRequestDTO loginRequestDTO) {
+
         Users user = userRepository.findByEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid email or password")
+                        new IllegalArgumentException(
+                                "Invalid email or password"
+                        )
                 );
 
-
-        if (Boolean.FALSE.equals(user.getIsVerified())) {
-            throw new IllegalStateException("Please verify your email before logging in");
-        }
-
-        if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid email or password");
+        if (!passwordEncoder.matches(
+                loginRequestDTO.getPassword(),
+                user.getPassword())) {
+            throw new IllegalArgumentException(
+                    "Invalid email or password"
+            );
         }
 
         String token = jwtUtil.generateAccessToken(user);
 
-        LoginResponse response = LoginResponse.builder()
+        return LoginResponse.builder()
                 .jwt(token)
                 .email(user.getEmail())
                 .build();
-
-        return response;
     }
 }
