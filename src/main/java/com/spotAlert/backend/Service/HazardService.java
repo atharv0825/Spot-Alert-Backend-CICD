@@ -8,13 +8,10 @@ import com.spotAlert.backend.Repository.HazardRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,44 +20,75 @@ public class HazardService {
 
     private final HazardRepository hazardRepository;
 
+    // Add a new hazard
     public HazardsDTO addHazards(HazardsDTO hazardsDTO) {
         try {
             Hazard hazard = HazardsMapper.toEntity(hazardsDTO);
-            return HazardsMapper.toDTO(hazardRepository.save(hazard));
+
+            Hazard savedHazard = hazardRepository.save(hazard);
+
+            return HazardsMapper.toDTO(savedHazard);
+
         } catch (Exception e) {
+            log.error("Failed to add hazard", e);
             throw new RuntimeException("Failed to add hazard", e);
         }
     }
 
+    // Get hazards by city or all cities
     public List<HazardsResponseDTO> getHazardsByCity(String city) {
-        if (city == null || city.isBlank()) return List.of();
 
-        return hazardRepository.findByCityContainingIgnoreCase(city)
-                .stream()
+        List<Hazard> hazards;
+
+        if (city == null || city.isBlank() || city.equalsIgnoreCase("all")) {
+            log.info("Fetching hazards from all cities");
+            hazards = hazardRepository.findAll();
+        } else {
+            log.info("Fetching hazards for city: {}", city);
+            hazards = hazardRepository.findByCityContainingIgnoreCase(city);
+        }
+
+        return hazards.stream()
                 .map(HazardsMapper::toResponseDTO)
                 .toList();
     }
 
+    // Get unverified hazards by city or all cities
     public List<HazardsResponseDTO> getUnverifiedHazardsByCity(String city) {
-        if (city == null || city.isBlank()) return List.of();
 
-        return hazardRepository.findByCityContainingIgnoreCaseAndVerifiedFalse(city)
-                .stream()
+        List<Hazard> hazards;
+
+        if (city == null || city.isBlank() || city.equalsIgnoreCase("all")) {
+            log.info("Fetching unverified hazards from all cities");
+            hazards = hazardRepository.findByVerifiedFalse();
+        } else {
+            log.info("Fetching unverified hazards for city: {}", city);
+            hazards = hazardRepository.findByCityContainingIgnoreCaseAndVerifiedFalse(city);
+        }
+
+        return hazards.stream()
                 .map(HazardsMapper::toResponseDTO)
                 .toList();
     }
 
+    // Verify a single hazard
     public void verifyHazards(String id) {
+
         Hazard hazard = hazardRepository.findByIdAndVerifiedFalse(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
-                                "Hazard not found or already verified: " + id));
+                                "Hazard not found or already verified: " + id
+                        )
+                );
 
         hazard.setVerified(true);
+
         hazardRepository.save(hazard);
     }
 
+    // Verify multiple hazards
     public void verifyMultipleHazards(List<String> ids) {
+
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("Hazard ID list cannot be empty");
         }
@@ -76,15 +104,22 @@ public class HazardService {
         hazardRepository.saveAll(hazards);
     }
 
+    // Delete a single hazard
     public void deleteHazard(String id) {
+
         Hazard hazard = hazardRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Hazard not found with id: " + id));
+                        new IllegalArgumentException(
+                                "Hazard not found with id: " + id
+                        )
+                );
 
         hazardRepository.delete(hazard);
     }
 
+    // Delete multiple hazards
     public void deleteHazardsBulk(List<String> ids) {
+
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("Hazard ID list cannot be empty");
         }
