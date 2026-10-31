@@ -30,33 +30,26 @@ public class SecurityConfig {
     // CORS Configuration
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(List.of(
-                "https://admin-spotalert.atharvs.online",
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:8080"
+        config.setAllowedOrigins(List.of(
+                "http://localhost:8080",
+                "https://spotalert.atharvs.online",
+                "https://admin-spotalert.atharvs.online"
         ));
 
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "OPTIONS"
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
         ));
 
-        configuration.setAllowedHeaders(List.of("*"));
-
-        configuration.setAllowCredentials(true);
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
 
         return source;
     }
